@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "CnLyyM6OORtwBMVjCy5jvVsf+gQV/tIeMwlAwp1Cvzg=",
+  "Source": "webapi-bilheteria_c",
+  "BasePath": "_content/webapi-bilheteria_c",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
