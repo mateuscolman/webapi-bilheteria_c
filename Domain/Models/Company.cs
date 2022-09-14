@@ -8,5 +8,6 @@ namespace webapi_bilheteria_c.Domain.Models
         public string? Name { get; set; }
         public int Active { get; set; }
         public string? OwnerUid { get; set; }
+        public int ExclusionLogic { get; set; }
     }
 }

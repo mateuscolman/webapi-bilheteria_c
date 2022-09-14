@@ -43,12 +43,14 @@ namespace webapi_bilheteria_c.Properties
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IEventsService, EventsService>();
 
             //add Repository
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IParametersRepository, ParametersRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
-
+            services.AddScoped<IEventsRepository, EventsRepository>();
+            
             //add Providers
             services.AddScoped<ParametersProvider>();
 

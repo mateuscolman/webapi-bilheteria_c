@@ -16,7 +16,7 @@ namespace webapi_bilheteria_c.Controllers
         }
 
         [HttpGet("get-company-by-owner")]
-        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Company>), StatusCodes.Status200OK)]
         public ActionResult GetCompanyByOwner(){
             try
             {
@@ -28,14 +28,51 @@ namespace webapi_bilheteria_c.Controllers
             }
         }
 
-        [HttpPost("create-company")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult CreateCompany([FromBody] Company company){
+        [HttpGet("get-company-by-uid")]
+        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        public ActionResult GetCompanyByUid(string? uid){
             try
             {
-                company.OwnerUid = TokenId;
-                _companyService.CreateCompany(company);
+                return Ok(_companyService.GetCompanyByUid(uid));               
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new {error = ex.Message});
+            }
+        }
+
+        [HttpPost("create-company")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public ActionResult CreateCompany(string name, string description){
+            try
+            {                                
+                _companyService.CreateCompany(new Company{
+                    OwnerUid = TokenId,
+                    Name = name,
+                    Description = description
+                });
                 return Created("", new {Created = true});               
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new {error = ex.Message});
+            }
+        }
+
+        [HttpPut("edit-company/{uid}")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        public ActionResult EditCompany(string? description, string? name, int active, 
+            int exclusionLogic, [FromRoute] string? uid){
+            try
+            {                
+                _companyService.EditCompany(new Company{
+                    Description = description,
+                    Name = name,
+                    Active = active,
+                    Uid = uid,
+                    ExclusionLogic = exclusionLogic
+                });
+                return Accepted("", new {Created = true});               
             }
             catch (Exception ex)
             {

@@ -4,7 +4,9 @@ namespace webapi_bilheteria_c.Domain.Interface
 {
     public interface ICompanyService
     {
-        Company GetCompanyByOwner(string uid);
-        void CreateCompany(Company company);
+        Company GetCompanyByUid(string? uid);
+        List<Company> GetCompanyByOwner(string? uid);
+        bool CreateCompany(Company company);
+        void EditCompany(Company company);
     }
 }

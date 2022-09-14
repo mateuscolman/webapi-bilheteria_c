@@ -11,12 +11,20 @@ namespace webapi_bilheteria_c.Services
             _companyRepository = companyRepository;
         }
 
-        public Company GetCompanyByOwner(string? uid){
-            return _companyRepository.GetCompanyByOwner(uid).Result;
+        public List<Company> GetCompanyByOwner(string? ownerUid){
+            return _companyRepository.GetCompanyByOwner(ownerUid).Result;
         }
         
-        public void CreateCompany(Company company){
-            _companyRepository.CreateCompany(company);
+        public Company GetCompanyByUid(string? uid){
+            return _companyRepository.GetCompanyByUid(uid).Result;
+        }
+
+        public bool CreateCompany(Company company){
+            return _companyRepository.CreateCompany(company).Result;    
+        }
+
+        public void EditCompany(Company company){
+            _companyRepository.EditCompany(company);
         }
     }
 }
