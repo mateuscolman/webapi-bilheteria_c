@@ -23,7 +23,7 @@ namespace webapi_bilheteria_c.Properties
             return services;
         }
 
-        public static void AddAppSettings(this IServiceCollection services){
+        private static void AddAppSettings(this IServiceCollection services){
             var configurationKeys = new ConfigurationKeys();
             var filePath = 
                 Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, 
@@ -42,10 +42,12 @@ namespace webapi_bilheteria_c.Properties
             //add Services
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ICompanyService, CompanyService>();
 
             //add Repository
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IParametersRepository, ParametersRepository>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
 
             //add Providers
             services.AddScoped<ParametersProvider>();

@@ -32,7 +32,7 @@ namespace webapi_bilheteria_c.Controllers
 
         [HttpPost("sign-up")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult SignUp(Users user){
+        public ActionResult SignUp([FromBody] Users user){
             try
             {
                 _usersService.SignUp(user);
