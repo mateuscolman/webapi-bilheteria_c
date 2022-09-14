@@ -13,8 +13,18 @@ namespace webapi_bilheteria_c.Services
             _tokenService = tokenService;
         }
 
-        public TokenResponse GetUserByEmail(string email, string password){
-            return _tokenService.GenerateToken(_usersRepository.GetUserByEmail(email, password).Result);
+        public TokenResponse Login(string email, string password){
+            return _tokenService.GenerateToken(_usersRepository.AuthUser(email, password).Result);            
+        }
+
+        public void SignUp(Users user){
+            var exist = String.IsNullOrEmpty(_usersRepository.GetUserByEmail(user.Email).Result) ? true : false;
+            if (!exist) throw new Exception("204");
+            _usersRepository.InsertUser(user);
+        }
+
+        public void SetPrivileges(int privileges, string email){
+            _usersRepository.SetPrivileges(privileges, email);
         }
     }
 }

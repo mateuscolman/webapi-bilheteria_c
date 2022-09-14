@@ -5,7 +5,7 @@ namespace webapi_bilheteria_c.Controllers
 {
     public class MainController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
+        public readonly ITokenService _tokenService;
 
         public MainController(ITokenService tokenService){
             _tokenService = tokenService;

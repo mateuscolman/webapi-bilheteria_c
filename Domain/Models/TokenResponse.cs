@@ -4,5 +4,6 @@ namespace webapi_bilheteria_c.Domain.Models
     {
         public DateTime DataExpiracao { get; set; }
         public string? Token { get; set; }
+        public int Privileges { get; set; }
     }
 }

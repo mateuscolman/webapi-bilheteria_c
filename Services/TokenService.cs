@@ -45,7 +45,7 @@ namespace webapi_bilheteria_c.Services
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new TokenResponse {Token = tokenHandler.WriteToken(token), DataExpiracao = expires };
+            return new TokenResponse {Token = tokenHandler.WriteToken(token), DataExpiracao = expires, Privileges = user.Privileges };
         }
     }
 

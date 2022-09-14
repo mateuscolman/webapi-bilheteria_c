@@ -52,10 +52,11 @@ namespace webapi_bilheteria_c.Properties
 
             _parametersProvider = services.BuildServiceProvider().GetService<ParametersProvider>();
 
-            configurationKeys.Parameters = GetParametersFromDB();
+            configurationKeys.Parameters = GetParametersFromDB();                    
+
             AddAuthorization(services, 
                 Encoding.ASCII.GetBytes(configurationKeys.Parameters.FirstOrDefault(s => s.Code == "CONF1").Value));
-
+            
             services.AddSingleton(configurationKeys);
         }
 
