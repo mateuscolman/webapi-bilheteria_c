@@ -15,6 +15,18 @@ namespace webapi_bilheteria_c.Controllers
             _eventsService = eventsService;
         }
 
+        [HttpGet("get-event-by-uid")]
+        public ActionResult GetEventByUid(string? uid){
+            try
+            {
+                return Ok(_eventsService.GetEventsByUid(uid));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);                
+            }
+        }
+
         [HttpGet("get-events-on-display")]
         public ActionResult GetEventsOnDisplay(){
             try

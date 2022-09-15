@@ -9,5 +9,6 @@ namespace webapi_bilheteria_c.Domain.Interface
         Task<List<Events>> GetEventsOnDisplayByCompany(string? companyUid);
         Task<List<Events>> GetEventsOnDisplay();
         Task<List<EventsTime>> GetEventsTime(string? eventUid);
+        Task<Events> GetEventByUid(string? uid);
     }
 }

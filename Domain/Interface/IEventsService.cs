@@ -7,5 +7,6 @@ namespace webapi_bilheteria_c.Domain.Interface
         bool InsertEvent(Events events);
         List<Events> GetEventsOnDisplay();
         List<Events> GetEventsOnDisplayByCompany(string? companyUid);
+        Events GetEventsByUid(string? uid);
     }
 }

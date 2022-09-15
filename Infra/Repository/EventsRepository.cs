@@ -34,6 +34,26 @@ namespace webapi_bilheteria_c.Infra.Repository
             var events = await _dbConnection.QueryAsync<Events>(command, new {companyUid});
             return events.ToList();
         }
+
+        public async Task<Events> GetEventByUid(string? uid){
+            var command = $@"
+                select
+                    uid,
+                    name,
+                    starts_in as StartsIn,
+                    ends_in as EndsIn,
+                    on_display as OnDisplay,
+                    description,
+                    cancelled,
+                    reason,
+                    company_uid as CompanyUid,
+                    published_by as PublishedBy
+                from events
+                where uid = @uid
+            ";            
+
+            return await _dbConnection.QueryFirstOrDefaultAsync<Events>(command, new {uid});
+        }
         
         public async Task<List<Events>> GetEventsOnDisplay(){
             var command = $@"
@@ -91,7 +111,7 @@ namespace webapi_bilheteria_c.Infra.Repository
                 from events_time 
                 where event_uid = @eventUid";
             
-            var eventsTime = await _dbConnection.QueryAsync<EventsTime>(command, eventUid);
+            var eventsTime = await _dbConnection.QueryAsync<EventsTime>(command, new {eventUid});
             return eventsTime.ToList();             
         }
 
