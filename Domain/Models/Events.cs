@@ -12,5 +12,6 @@ namespace webapi_bilheteria_c.Domain.Models
         public string? Reason { get; set; }
         public string? CompanyUid { get; set; }
         public string? PublishedBy { get; set; }
+        public List<EventsTime>? EventsTimes { get; set; } = new List<EventsTime>();
     }
 }
