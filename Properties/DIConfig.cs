@@ -19,6 +19,9 @@ namespace webapi_bilheteria_c.Properties
         public static ParametersProvider _parametersProvider;
 
         public static IServiceCollection ConfigureServiceDependence(this IServiceCollection services){
+            AddServices(services);
+            AddRepository(services);
+            AddProvider(services);
             AddAppSettings(services);
             return services;
         }
@@ -37,23 +40,8 @@ namespace webapi_bilheteria_c.Properties
                 .Configure(configurationKeys);
             
             //add Database
-            services.AddTransient<IDbConnection>(s => new MySqlConnection(configurationKeys.ConnectionStrings?.BilheteriaCDB));
-
-            //add Services
-            services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<ICompanyService, CompanyService>();
-            services.AddScoped<IEventsService, EventsService>();
-
-            //add Repository
-            services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IParametersRepository, ParametersRepository>();
-            services.AddScoped<ICompanyRepository, CompanyRepository>();
-            services.AddScoped<IEventsRepository, EventsRepository>();
+            services.AddTransient<IDbConnection>(s => new MySqlConnection(configurationKeys.ConnectionStrings?.BilheteriaCDB));            
             
-            //add Providers
-            services.AddScoped<ParametersProvider>();
-
             _parametersProvider = services.BuildServiceProvider().GetService<ParametersProvider>();
 
             configurationKeys.Parameters = GetParametersFromDB();                    
@@ -64,7 +52,25 @@ namespace webapi_bilheteria_c.Properties
             services.AddSingleton(configurationKeys);
         }
 
-        private  static List<Parameters> GetParametersFromDB(){
+        private static void AddServices(IServiceCollection services){            
+            services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IEventsService, EventsService>();        
+        }
+
+        private static void AddRepository(IServiceCollection services){
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IParametersRepository, ParametersRepository>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IEventsRepository, EventsRepository>();
+        }
+
+        private static void AddProvider(IServiceCollection services){
+            services.AddScoped<ParametersProvider>();
+        }
+
+        private static List<Parameters> GetParametersFromDB(){
             return _parametersProvider.GetParametersFromDB();
         }
 

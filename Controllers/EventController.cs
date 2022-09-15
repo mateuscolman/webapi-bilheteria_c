@@ -15,6 +15,30 @@ namespace webapi_bilheteria_c.Controllers
             _eventsService = eventsService;
         }
 
+        [HttpGet("get-events-on-display")]
+        public ActionResult GetEventsOnDisplay(){
+            try
+            {
+                return Ok(_eventsService.GetEventsOnDisplay());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);   
+            }
+        }
+
+        [HttpGet("get-events-on-display-by-company")]
+        public ActionResult GetEventsOnDisplayByCompany(string? companyUid){
+            try
+            {
+                return Ok(_eventsService.GetEventsOnDisplayByCompany(companyUid));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);                
+            }
+        }
+
         [HttpPost("insert-event")]
         public ActionResult InsertEvent(string? name, DateTime startsIn, DateTime endsIn, 
             string? description, string? companyUid){

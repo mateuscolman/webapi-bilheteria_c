@@ -6,5 +6,8 @@ namespace webapi_bilheteria_c.Domain.Interface
     {
         Task<string> InsertEvent(Events events); 
         Task InsertEventTime(DateTime date, string? eventUid);
+        Task<List<Events>> GetEventsOnDisplayByCompany(string? companyUid);
+        Task<List<Events>> GetEventsOnDisplay();
+        Task<List<EventsTime>> GetEventsTime(string? eventUid);
     }
 }

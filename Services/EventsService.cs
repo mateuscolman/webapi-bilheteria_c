@@ -11,6 +11,25 @@ namespace webapi_bilheteria_c.Services
             _eventsRepository = eventsRepository;
         } 
 
+        public List<Events> GetEventsOnDisplay(){
+            var events = _eventsRepository.GetEventsOnDisplay().Result;
+            foreach (var item in events)
+            {
+                item.EventsTimes = new List<EventsTime>();
+                item.EventsTimes = _eventsRepository.GetEventsTime(item.Uid).Result;
+            }
+            return events;
+        }
+
+        public List<Events> GetEventsOnDisplayByCompany(string? companyUid){
+            var events = _eventsRepository.GetEventsOnDisplayByCompany(companyUid).Result;
+            foreach (var item in events)
+            {
+                item.EventsTimes = _eventsRepository.GetEventsTime(item.Uid).Result;
+            }
+            return events;
+        } 
+
         public bool InsertEvent(Events events){
             var eventUid = _eventsRepository.InsertEvent(events).Result;
 
