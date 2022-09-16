@@ -1,5 +1,7 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using webapi_bilheteria_c.Domain.Interface;
 using webapi_bilheteria_c.Domain.Models;
 
@@ -10,9 +12,30 @@ namespace webapi_bilheteria_c.Controllers
     public class EventController : MainController
     {        
         private readonly IEventsService _eventsService;
-        public EventController(IEventsService eventsService, ITokenService tokenService): base(tokenService)
+        private readonly IMessageProducer _messageProducer;
+        private readonly IPixClient _pixClient;
+
+        public EventController(IEventsService eventsService, IPixClient pixClient,
+            IMessageProducer messageProducer, ITokenService tokenService): base(tokenService)
         {            
             _eventsService = eventsService;
+            _messageProducer = messageProducer;
+            _pixClient = pixClient;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("test")]
+        public ActionResult PostTest(){
+            try
+            {                
+                _pixClient.GenerateToken();                
+                return Accepted();
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
         }
 
         [HttpGet("get-event-by-uid")]
