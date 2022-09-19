@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using webapi_bilheteria_c.Domain.Interface;
 using webapi_bilheteria_c.Domain.Models;
@@ -13,7 +12,6 @@ using webapi_bilheteria_c.Infra.Client;
 using webapi_bilheteria_c.Infra.Repository;
 using webapi_bilheteria_c.Services;
 using webapi_bilheteria_c.Services.Provider;
-
 
 namespace webapi_bilheteria_c.Properties
 {
@@ -67,7 +65,8 @@ namespace webapi_bilheteria_c.Properties
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICompanyService, CompanyService>();
-            services.AddScoped<IEventsService, EventsService>();        
+            services.AddScoped<IEventsService, EventsService>(); 
+            services.AddScoped<ILoggerService, LoggerService>();       
         }
 
         private static void AddRepository(IServiceCollection services){
@@ -95,7 +94,7 @@ namespace webapi_bilheteria_c.Properties
 
         private static List<Credentials> GetCredentialsFromDB(){
             return _credentialsProvider.GetCredentialsFromDB();
-        }
+        }                                                                           
 
         private static void AddAuthorization(IServiceCollection services, byte[] secret){
             services.AddAuthentication(x =>
@@ -115,5 +114,5 @@ namespace webapi_bilheteria_c.Properties
                 };
             });
         }
-    }
+    }        
 }

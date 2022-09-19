@@ -14,13 +14,25 @@ namespace webapi_bilheteria_c.Infra.Repository
 
         public async Task UpdateJWT(string? jwt, DateTime expiresIn, string? origin){
             var command = $@"
-                update authorization
+                update authorization_keys
                 set bearer = @jwt,
                     expires_in = @expiresIn
                 where origin = @origin
             ";
 
-            await _dbConnection.ExecuteAsync(command);
+            await _dbConnection.ExecuteAsync(command, new {jwt, expiresIn, origin});
+        }
+
+        public async Task<string> SearchJWT(string? origin){
+            var command = $@"
+                select 
+                    bearer
+                from authorization_keys
+                where 
+                    origin = @origin
+                    and expires_in > sysdate()
+            ";
+            return await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new {origin});
         }
     }
 }

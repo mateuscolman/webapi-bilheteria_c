@@ -14,10 +14,12 @@ namespace webapi_bilheteria_c.Controllers
         private readonly IEventsService _eventsService;
         private readonly IMessageProducer _messageProducer;
         private readonly IPixClient _pixClient;
+        private readonly ILogger<ILoggerService> _logger;
 
         public EventController(IEventsService eventsService, IPixClient pixClient,
-            IMessageProducer messageProducer, ITokenService tokenService): base(tokenService)
+            IMessageProducer messageProducer, ITokenService tokenService, ILogger<ILoggerService> logger): base(tokenService)
         {            
+            _logger = logger;
             _eventsService = eventsService;
             _messageProducer = messageProducer;
             _pixClient = pixClient;
@@ -27,9 +29,14 @@ namespace webapi_bilheteria_c.Controllers
         [HttpPost("test")]
         public ActionResult PostTest(){
             try
-            {                
-                _pixClient.GenerateToken();                
-                return Accepted();
+            {       
+                _logger.LogInformation("Teste");         
+                return Accepted (_pixClient.GenerateCharge(new Ticket{
+                    EventName = "teste",
+                    Value = "0.10",
+                    PayerDocument = "41668971879",
+                    PayerName = "Mateus Colman"                    
+                }, "71cdf9ba-c695-4e3c-b010-abb521a3f1be") .Result);                                            
             }
             catch (System.Exception)
             {
