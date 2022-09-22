@@ -7,6 +7,8 @@ using webapi_bilheteria_c.Properties;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
+builder.Services.ConfigureServiceDependency();
+Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 ConfigureLogging();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -39,7 +41,6 @@ builder.Services.AddSwaggerGen(c =>
                     }
                 });
 });
-builder.Services.ConfigureServiceDependency();
 
 var app = builder.Build();
 
@@ -88,6 +89,5 @@ ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, 
     {
         AutoRegisterTemplate = true,
         IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
-
     };
 }

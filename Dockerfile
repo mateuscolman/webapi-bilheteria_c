@@ -12,6 +12,7 @@ FROM build AS publish
 RUN dotnet publish --no-restore -c Release -o /app
 
 FROM base AS final
+ENV ASPNETCORE_ENVIRONMENT Staging
 WORKDIR /app
 COPY --from=publish /app .
 # Padrão de container ASP.NET
