@@ -32,7 +32,7 @@ namespace webapi_bilheteria_c.Properties
 
         private static void AddAppSettings(this IServiceCollection services)
         {
-            Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
+            Console.WriteLine($@"Enviroment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
             var configurationKeys = new ConfigurationKeys();
             var settingsPath =
                 Path.Combine(PlatformServices.Default.Application.ApplicationBasePath,
@@ -59,7 +59,7 @@ namespace webapi_bilheteria_c.Properties
 
             //add GerenciaNet certified
             configurationKeys.CertificateGerenciaNet = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath,
-                $@"Cert.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12"), "");
+              $@"Cert.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12"), "");
 
             services.AddSingleton(configurationKeys);
         }

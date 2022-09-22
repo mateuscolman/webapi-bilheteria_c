@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
 builder.Services.ConfigureServiceDependency();
-Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 ConfigureLogging();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
