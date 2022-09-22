@@ -16,11 +16,12 @@ using webapi_bilheteria_c.Services.Provider;
 namespace webapi_bilheteria_c.Properties
 {
     public static class DIConfig
-    {        
+    {
         public static ParametersProvider _parametersProvider;
         public static CredentialsProvider _credentialsProvider;
 
-        public static IServiceCollection ConfigureServiceDependence(this IServiceCollection services){
+        public static IServiceCollection ConfigureServiceDependency(this IServiceCollection services)
+        {
             AddServices(services);
             AddRepository(services);
             AddProvider(services);
@@ -29,11 +30,12 @@ namespace webapi_bilheteria_c.Properties
             return services;
         }
 
-        private static void AddAppSettings(this IServiceCollection services){
+        private static void AddAppSettings(this IServiceCollection services)
+        {
             var configurationKeys = new ConfigurationKeys();
-            var settingsPath = 
-                Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, 
-                $@"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json");                                                                 
+            var settingsPath =
+                Path.Combine(PlatformServices.Default.Application.ApplicationBasePath,
+                $@"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json");
 
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(settingsPath, false, true)
@@ -41,62 +43,71 @@ namespace webapi_bilheteria_c.Properties
 
             new ConfigureFromConfigurationOptions<ConfigurationKeys>(configuration)
                 .Configure(configurationKeys);
-            
+
             //add Database
-            services.AddTransient<IDbConnection>(s => new MySqlConnection(configurationKeys.ConnectionStrings?.BilheteriaCDB)); 
+            services.AddTransient<IDbConnection>(s => new MySqlConnection(configurationKeys.ConnectionStrings?.BilheteriaCDB));
 
             //starting Providers                       
             _parametersProvider = services.BuildServiceProvider().GetService<ParametersProvider>();
             _credentialsProvider = services.BuildServiceProvider().GetService<CredentialsProvider>();
 
-            configurationKeys.Parameters = GetParametersFromDB();                    
+            configurationKeys.Parameters = GetParametersFromDB();
             configurationKeys.Credentials = GetCredentialsFromDB();
 
-            AddAuthorization(services, 
+            AddAuthorization(services,
                 Encoding.ASCII.GetBytes(configurationKeys.Parameters.FirstOrDefault(s => s.Code == "CONF1").Value));
-            
+
             //add GerenciaNet certified
-            configurationKeys.CertificateGerenciaNet = new X509Certificate2($@"./Certs/{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12", "");            
+            configurationKeys.CertificateGerenciaNet = new X509Certificate2($@"./Certs/{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12", "");
 
             services.AddSingleton(configurationKeys);
         }
 
-        private static void AddServices(IServiceCollection services){            
+        private static void AddServices(IServiceCollection services)
+        {
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICompanyService, CompanyService>();
-            services.AddScoped<IEventsService, EventsService>(); 
-            services.AddScoped<ILoggerService, LoggerService>();       
+            services.AddScoped<IEventsService, EventsService>();
+            services.AddScoped<ILoggerService, LoggerService>();
+            services.AddScoped<ITicketService, TicketService>();
         }
 
-        private static void AddRepository(IServiceCollection services){
+        private static void AddRepository(IServiceCollection services)
+        {
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IParametersRepository, ParametersRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<ICredentialsRepository, CredentialsRepository>();
             services.AddScoped<IAuthorizationRepository, AuthorizationRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
         }
 
-        private static void AddProvider(IServiceCollection services){
+        private static void AddProvider(IServiceCollection services)
+        {
             services.AddScoped<ParametersProvider>();
             services.AddScoped<CredentialsProvider>();
         }
 
-        private static void AddClient(IServiceCollection services){
+        private static void AddClient(IServiceCollection services)
+        {
             services.AddScoped<IMessageProducer, RabbitMQClient>();
             services.AddScoped<IPixClient, GerenciaNetClient>();
         }
 
-        private static List<Parameters> GetParametersFromDB(){
+        private static List<Parameters> GetParametersFromDB()
+        {
             return _parametersProvider.GetParametersFromDB();
         }
 
-        private static List<Credentials> GetCredentialsFromDB(){
+        private static List<Credentials> GetCredentialsFromDB()
+        {
             return _credentialsProvider.GetCredentialsFromDB();
-        }                                                                           
+        }
 
-        private static void AddAuthorization(IServiceCollection services, byte[] secret){
+        private static void AddAuthorization(IServiceCollection services, byte[] secret)
+        {
             services.AddAuthentication(x =>
             {
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -114,5 +125,5 @@ namespace webapi_bilheteria_c.Properties
                 };
             });
         }
-    }        
+    }
 }

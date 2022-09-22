@@ -5,42 +5,47 @@ namespace webapi_bilheteria_c.Services
 {
     public class EventsService : IEventsService
     {
-        private readonly IEventsRepository _eventsRepository;  
+        private readonly IEventsRepository _eventsRepository;
 
-        public EventsService(IEventsRepository eventsRepository){
+        public EventsService(IEventsRepository eventsRepository)
+        {
             _eventsRepository = eventsRepository;
-        } 
+        }
 
-        public Events GetEventsByUid(string? uid){
+        public Events GetEventsByUid(string? uid)
+        {
             var events = _eventsRepository.GetEventByUid(uid).Result;
             events.EventsTimes = _eventsRepository.GetEventsTime(events.Uid).Result;
             return events;
         }
 
-        public List<Events> GetEventsOnDisplay(){
+        public List<Events> GetEventsOnDisplay()
+        {
             var events = _eventsRepository.GetEventsOnDisplay().Result;
             foreach (var item in events)
-            {                  
-                item.EventsTimes = _eventsRepository.GetEventsTime(item.Uid).Result;    
-            }                            
+            {
+                item.EventsTimes = _eventsRepository.GetEventsTime(item.Uid).Result;
+            }
             return events;
         }
 
-        public List<Events> GetEventsOnDisplayByCompany(string? companyUid){
+        public List<Events> GetEventsOnDisplayByCompany(string? companyUid)
+        {
             var events = _eventsRepository.GetEventsOnDisplayByCompany(companyUid).Result;
             foreach (var item in events)
             {
                 item.EventsTimes = _eventsRepository.GetEventsTime(item.Uid).Result;
             }
             return events;
-        } 
+        }
 
-        public bool InsertEvent(Events events){
+        public bool CreateEvent(Events events, int fullValue)
+        {
             var eventUid = _eventsRepository.InsertEvent(events).Result;
 
-            var daysToTheEvent = events.EndsIn - events.StartsIn;            
+            var daysToTheEvent = events.EndsIn - events.StartsIn;
             DateTime insertDate = events.StartsIn;
-            
+
             if (daysToTheEvent.Days == 0)
             {
                 _eventsRepository.InsertEventTime(insertDate, eventUid);
@@ -54,6 +59,9 @@ namespace webapi_bilheteria_c.Services
                 insertDate = insertDate.AddDays(1);
                 count++;
             }
+
+            _eventsRepository.InsertValueEvent(eventUid, fullValue);
+
             return true;
         }
     }

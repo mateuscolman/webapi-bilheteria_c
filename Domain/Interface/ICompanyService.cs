@@ -8,5 +8,7 @@ namespace webapi_bilheteria_c.Domain.Interface
         List<Company> GetCompanyByOwner(string? uid);
         bool CreateCompany(Company company);
         void EditCompany(Company company);
+        bool InsertPaymentMethod(CompanyPaymentMethod companyPaymentMethod);
+        List<CompanyPaymentMethod> GetPaymentMethod(string companyUid);
     }
 }

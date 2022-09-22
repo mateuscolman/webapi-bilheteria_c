@@ -7,24 +7,39 @@ namespace webapi_bilheteria_c.Services
     {
         private readonly ICompanyRepository _companyRepository;
 
-        public CompanyService(ICompanyRepository companyRepository){
+        public CompanyService(ICompanyRepository companyRepository)
+        {
             _companyRepository = companyRepository;
         }
 
-        public List<Company> GetCompanyByOwner(string? ownerUid){
+        public List<Company> GetCompanyByOwner(string? ownerUid)
+        {
             return _companyRepository.GetCompanyByOwner(ownerUid).Result;
         }
-        
-        public Company GetCompanyByUid(string? uid){
+
+        public Company GetCompanyByUid(string? uid)
+        {
             return _companyRepository.GetCompanyByUid(uid).Result;
         }
 
-        public bool CreateCompany(Company company){
-            return _companyRepository.CreateCompany(company).Result;    
+        public bool CreateCompany(Company company)
+        {
+            return _companyRepository.CreateCompany(company).Result;
         }
 
-        public void EditCompany(Company company){
+        public void EditCompany(Company company)
+        {
             _companyRepository.EditCompany(company);
+        }
+
+        public bool InsertPaymentMethod(CompanyPaymentMethod companyPaymentMethod)
+        {
+            return _companyRepository.InsertPaymentMethod(companyPaymentMethod).Result;
+        }
+
+        public List<CompanyPaymentMethod> GetPaymentMethod(string companyUid)
+        {
+            return _companyRepository.GetPaymentMethod(companyUid).Result;
         }
     }
 }

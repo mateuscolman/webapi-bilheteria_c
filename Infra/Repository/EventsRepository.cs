@@ -8,12 +8,14 @@ namespace webapi_bilheteria_c.Infra.Repository
     public class EventsRepository : IEventsRepository
     {
         private readonly IDbConnection _dbConnection;
-        
-        public EventsRepository(IDbConnection dbConnection){
+
+        public EventsRepository(IDbConnection dbConnection)
+        {
             _dbConnection = dbConnection;
         }
 
-        public async Task<List<Events>> GetEventsOnDisplayByCompany(string? companyUid){
+        public async Task<List<Events>> GetEventsOnDisplayByCompany(string? companyUid)
+        {
             var command = $@"
                 select
                     uid,
@@ -29,13 +31,14 @@ namespace webapi_bilheteria_c.Infra.Repository
                 from events
                 where company_uid = @companyUid
                     and on_display = 1
-            ";            
+            ";
 
-            var events = await _dbConnection.QueryAsync<Events>(command, new {companyUid});
+            var events = await _dbConnection.QueryAsync<Events>(command, new { companyUid });
             return events.ToList();
         }
 
-        public async Task<Events> GetEventByUid(string? uid){
+        public async Task<Events> GetEventByUid(string? uid)
+        {
             var command = $@"
                 select
                     uid,
@@ -50,12 +53,13 @@ namespace webapi_bilheteria_c.Infra.Repository
                     published_by as PublishedBy
                 from events
                 where uid = @uid
-            ";            
+            ";
 
-            return await _dbConnection.QueryFirstOrDefaultAsync<Events>(command, new {uid});
+            return await _dbConnection.QueryFirstOrDefaultAsync<Events>(command, new { uid });
         }
-        
-        public async Task<List<Events>> GetEventsOnDisplay(){
+
+        public async Task<List<Events>> GetEventsOnDisplay()
+        {
             var command = $@"
                 select
                     uid,
@@ -70,19 +74,21 @@ namespace webapi_bilheteria_c.Infra.Repository
                     published_by as PublishedBy
                 from events
                 where on_display = 1
-            ";            
+            ";
 
             var events = await _dbConnection.QueryAsync<Events>(command);
             return events.ToList();
         }
 
-        public async Task<string> InsertEvent(Events events){
-            if (!ValidInsert(events.Name, events.CompanyUid).Result) throw new Exception("Events already exist"); 
+        public async Task<string> InsertEvent(Events events)
+        {
+            if (!ValidInsert(events.Name, events.CompanyUid).Result) throw new Exception("Events already exist");
             var command = $@"
                 insert into events
                 values(uuid(), @name, @startsIn, @endsIn, 1, @description, 0, @reason, @companyUid, @publishedBy)
-            ";   
-            await _dbConnection.ExecuteAsync(command, new { 
+            ";
+            await _dbConnection.ExecuteAsync(command, new
+            {
                 name = events.Name,
                 startsIn = events.StartsIn,
                 endsIn = events.EndsIn,
@@ -90,32 +96,57 @@ namespace webapi_bilheteria_c.Infra.Repository
                 reason = events.Reason,
                 companyUid = events.CompanyUid,
                 publishedBy = events.PublishedBy
-             });
+            });
 
-            return LastInsert(events.Name, events.CompanyUid).Result;                      
+            return LastInsert(events.Name, events.CompanyUid).Result;
         }
 
-        public async Task InsertEventTime(DateTime date, string? eventUid){
+        public async Task InsertEventTime(DateTime date, string? eventUid)
+        {
             var command = $@"
                 insert into events_time
                 values(uuid(), @date, @date, @eventUid)
             ";
-            await _dbConnection.ExecuteAsync(command, new {date, eventUid});
+            await _dbConnection.ExecuteAsync(command, new { date, eventUid });
         }
 
-        public async Task<List<EventsTime>> GetEventsTime(string? eventUid){
+        public async Task<List<EventsTime>> GetEventsTime(string? eventUid)
+        {
             var command = $@"
                 select
                     start,
                     end
                 from events_time 
                 where event_uid = @eventUid";
-            
-            var eventsTime = await _dbConnection.QueryAsync<EventsTime>(command, new {eventUid});
-            return eventsTime.ToList();             
+
+            var eventsTime = await _dbConnection.QueryAsync<EventsTime>(command, new { eventUid });
+            return eventsTime.ToList();
         }
 
-        private async Task<bool> ValidInsert(string name, string companyUid){
+        public async Task InsertValueEvent(string eventUid, int fullValue)
+        {
+            var halfValue = fullValue / 2;
+            var command = $@"
+                insert into value_events
+                values(uuid(), @eventUid, @fullValue, @halfValue)
+            ";
+
+            await _dbConnection.ExecuteAsync(command, new { eventUid, fullValue, halfValue });
+        }
+
+        public async Task<int> GetValueEvents(string valueType, string? eventUid)
+        {
+            var command = $@"
+                select 
+                    {valueType}
+                from value_events
+                where event_uid = @eventUid
+            ";
+            return await _dbConnection.QueryFirstOrDefaultAsync<int>(command, new { eventUid });
+        }
+
+        private async Task<bool> ValidInsert(string name, string companyUid)
+        {
             var command = $@"
                 select
                     uid
@@ -126,11 +157,12 @@ namespace webapi_bilheteria_c.Infra.Repository
                     and on_display = 1                     
             ";
 
-            var uid = await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new {name, companyUid});
+            var uid = await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new { name, companyUid });
             return String.IsNullOrEmpty(uid) ? true : false;
         }
-        
-        private async Task<string> LastInsert(string name, string companyUid){
+
+        private async Task<string> LastInsert(string name, string companyUid)
+        {
             var command = $@"
                 select
                     uid
@@ -141,7 +173,7 @@ namespace webapi_bilheteria_c.Infra.Repository
                     and on_display = 1                     
             ";
 
-            return await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new {name, companyUid});            
+            return await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new { name, companyUid });
         }
     }
 }

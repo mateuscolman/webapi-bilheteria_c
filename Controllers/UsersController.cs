@@ -11,32 +11,35 @@ namespace webapi_bilheteria_c.Controllers
     public class UsersController : MainController
     {
         private readonly IUsersService _usersService;
-        
-        public UsersController(IUsersService usersService, ITokenService tokenService): base(tokenService) {
-            _usersService = usersService;           
-            
+
+        public UsersController(IUsersService usersService, ITokenService tokenService) : base(tokenService)
+        {
+            _usersService = usersService;
+
         }
 
         [HttpPost("sign-in")]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
-        public ActionResult Login(string email, string password){
+        public ActionResult Login(string email, string password)
+        {
             try
             {
                 return Ok(_usersService.Login(email, password));
             }
             catch (Exception ex)
-            {                
-                return BadRequest(new {error = ex.Message});
+            {
+                return BadRequest(ex);
             }
         }
 
         [HttpPost("sign-up")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult SignUp([FromBody] Users user){
+        public ActionResult SignUp([FromBody] Users user)
+        {
             try
             {
                 _usersService.SignUp(user);
-                return Created("", new {Created = true});
+                return Created("", new { Created = true });
             }
             catch (Exception ex)
             {
@@ -44,26 +47,27 @@ namespace webapi_bilheteria_c.Controllers
                 {
                     case "204":
                         return NoContent();
-                    
+
                     default:
-                        return BadRequest(new {error = ex.Message});
+                        return BadRequest(new { error = ex.Message });
                 }
-                
+
             }
         }
-                
+
         [HttpPut("set-privileges")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public ActionResult SetPrivileges(int privileges, string email){
+        public ActionResult SetPrivileges(int privileges, string email)
+        {
             try
             {
                 _usersService.SetPrivileges(privileges, email);
-                return Accepted("", new {Accepted = true});
+                return Accepted("", new { Accepted = true });
             }
             catch (Exception ex)
             {
-                return BadRequest( new {error = ex.Message});                
+                return BadRequest(new { error = ex.Message });
             }
         }
     }

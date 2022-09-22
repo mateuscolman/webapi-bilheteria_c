@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen(c =>
                     }
                 });
 });
-builder.Services.ConfigureServiceDependence();
+builder.Services.ConfigureServiceDependency();
 
 var app = builder.Build();
 
@@ -72,7 +72,7 @@ void ConfigureLogging()
         .Build();
 
     Log.Logger = new LoggerConfiguration()
-        .Enrich.FromLogContext()        
+        .Enrich.FromLogContext()
         .WriteTo.Debug()
         .WriteTo.Console()
         .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))

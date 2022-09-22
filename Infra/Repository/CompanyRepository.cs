@@ -9,11 +9,13 @@ namespace webapi_bilheteria_c.Infra.Repository
     {
         private readonly IDbConnection _dbConnection;
 
-        public CompanyRepository(IDbConnection dbConnection){
+        public CompanyRepository(IDbConnection dbConnection)
+        {
             _dbConnection = dbConnection;
         }
 
-        public async Task<List<Company>> GetCompanyByOwner(string? ownerUid){
+        public async Task<List<Company>> GetCompanyByOwner(string? ownerUid)
+        {
             var command = $@"
                 select 
                     uid,
@@ -28,11 +30,12 @@ namespace webapi_bilheteria_c.Infra.Repository
                     and exclusion_logic = 0
             ";
 
-            var company = await _dbConnection.QueryAsync<Company>(command, new {ownerUid});
+            var company = await _dbConnection.QueryAsync<Company>(command, new { ownerUid });
             return company.ToList();
-        } 
+        }
 
-        public async Task<Company> GetCompanyByUid(string? uid){
+        public async Task<Company> GetCompanyByUid(string? uid)
+        {
             var command = $@"
                 select 
                     uid,
@@ -45,26 +48,29 @@ namespace webapi_bilheteria_c.Infra.Repository
                 where uid = @uid
             ";
 
-            return await _dbConnection.QueryFirstOrDefaultAsync<Company>(command, new {uid});
-        } 
+            return await _dbConnection.QueryFirstOrDefaultAsync<Company>(command, new { uid });
+        }
 
-        public async Task<bool> CreateCompany(Company company){           
-            if (!ValidInsert(company.Name, company.OwnerUid).Result) throw new Exception("Company already exist"); 
+        public async Task<bool> CreateCompany(Company company)
+        {
+            if (!ValidInsert(company.Name, company.OwnerUid).Result) throw new Exception("Company already exist");
             var command = $@"
                 insert into company
                 values(uuid(), @description, sysdate(), @name, 1, @ownerUid, 0)
             ";
 
-            var teste = await _dbConnection.ExecuteAsync(command, new {
+            var teste = await _dbConnection.ExecuteAsync(command, new
+            {
                 description = company.Description,
                 name = company.Name,
                 ownerUid = company.OwnerUid
             });
 
-            return true;        
-        }        
+            return true;
+        }
 
-        public async Task EditCompany(Company company){
+        public async Task EditCompany(Company company)
+        {
             var command = $@"
                 update company
                 set 
@@ -75,7 +81,8 @@ namespace webapi_bilheteria_c.Infra.Repository
                 where uid = @uid            
             ";
 
-            await _dbConnection.ExecuteAsync(command, new {
+            await _dbConnection.ExecuteAsync(command, new
+            {
                 description = company.Description,
                 name = company.Name,
                 active = company.Active,
@@ -84,7 +91,40 @@ namespace webapi_bilheteria_c.Infra.Repository
             });
         }
 
-        private async Task<bool> ValidInsert(string? name, string? ownerUid){
+        public async Task<bool> InsertPaymentMethod(CompanyPaymentMethod companyPaymentMethod)
+        {
+            var command = $@"
+                insert into company_payment_methods
+                values(uuid(), @companyUid, @name, @paymentKey)
+            ";
+            await _dbConnection.ExecuteAsync(command, new
+            {
+                companyUid = companyPaymentMethod.CompanyUid,
+                name = companyPaymentMethod.Name,
+                paymentKey = companyPaymentMethod.PaymentKey
+            });
+
+            return true;
+        }
+
+        public async Task<List<CompanyPaymentMethod>> GetPaymentMethod(string companyUid)
+        {
+            var command = $@"
+                select 
+                    uid,
+                    company_uid as companyUid,
+                    name,
+                    payment_key as paymentKey
+                from company_payment_methods
+                where company_uid = @companyUid
+            ";
+
+            var companyPaymentMethods = await _dbConnection.QueryAsync<CompanyPaymentMethod>(command, new { companyUid });
+            return companyPaymentMethods.ToList();
+        }
+
+        private async Task<bool> ValidInsert(string? name, string? ownerUid)
+        {
             var command = $@"
                 select 
                     uid
@@ -95,7 +135,7 @@ namespace webapi_bilheteria_c.Infra.Repository
                     and exclusion_logic = 0
             ";
 
-            var uid = await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new {name, ownerUid});
+            var uid = await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new { name, ownerUid });
             return String.IsNullOrEmpty(uid) ? true : false;
         }
     }

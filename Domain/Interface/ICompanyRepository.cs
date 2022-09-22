@@ -8,5 +8,7 @@ namespace webapi_bilheteria_c.Domain.Interface
         Task<Company> GetCompanyByUid(string? uid);
         Task<bool> CreateCompany(Company company);
         Task EditCompany(Company company);
+        Task<bool> InsertPaymentMethod(CompanyPaymentMethod companyPaymentMethod);
+        Task<List<CompanyPaymentMethod>> GetPaymentMethod(string companyUid);
     }
 }

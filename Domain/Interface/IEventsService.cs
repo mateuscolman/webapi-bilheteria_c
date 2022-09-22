@@ -4,7 +4,7 @@ namespace webapi_bilheteria_c.Domain.Interface
 {
     public interface IEventsService
     {
-        bool InsertEvent(Events events);
+        bool CreateEvent(Events events, int fullValue);
         List<Events> GetEventsOnDisplay();
         List<Events> GetEventsOnDisplayByCompany(string? companyUid);
         Events GetEventsByUid(string? uid);
