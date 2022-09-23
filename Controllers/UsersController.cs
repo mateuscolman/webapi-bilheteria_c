@@ -20,11 +20,11 @@ namespace webapi_bilheteria_c.Controllers
 
         [HttpPost("sign-in")]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
-        public ActionResult Login(string email, string password)
+        public ActionResult Login([FromBody] Login login)
         {
             try
             {
-                return Ok(_usersService.Login(email, password));
+                return Ok(_usersService.Login(login.email, login.password));
             }
             catch (Exception ex)
             {

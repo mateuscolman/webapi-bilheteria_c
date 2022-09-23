@@ -14,6 +14,7 @@ RUN dotnet publish --no-restore -c Release -o /app
 FROM base AS final
 ENV ASPNETCORE_ENVIRONMENT Staging
 ADD /Cert.Staging.p12 /app/Cert.Staging.p12
+
 WORKDIR /app
 COPY --from=publish /app .
 # Padrão de container ASP.NET

@@ -43,11 +43,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -58,8 +55,6 @@ app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.Run();
 
 void ConfigureLogging()
 {
@@ -90,3 +85,5 @@ ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, 
         IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
     };
 }
+
+app.Run();

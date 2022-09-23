@@ -58,9 +58,16 @@ namespace webapi_bilheteria_c.Properties
                 Encoding.ASCII.GetBytes(configurationKeys.Parameters.FirstOrDefault(s => s.Code == "CONF1").Value));
 
             //add GerenciaNet certified
-            configurationKeys.CertificateGerenciaNet = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath,
-              $@"Cert.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12"), "");
-
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                configurationKeys.CertificateGerenciaNet = new X509Certificate2(
+                    $@"Cert.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12", "");
+            }
+            else
+            {
+                configurationKeys.CertificateGerenciaNet = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath,
+                    $@"Cert.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.p12"), "");
+            }
             services.AddSingleton(configurationKeys);
         }
 
