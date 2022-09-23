@@ -23,6 +23,7 @@ namespace webapi_bilheteria_c.Controllers
             _pixClient = pixClient;
         }
 
+        [AllowAnonymous]
         [HttpGet("get-event-by-uid")]
         public ActionResult GetEventByUid(string? uid)
         {
@@ -36,6 +37,7 @@ namespace webapi_bilheteria_c.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("get-events-on-display")]
         public ActionResult GetEventsOnDisplay()
         {
