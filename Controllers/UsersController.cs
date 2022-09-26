@@ -28,7 +28,7 @@ namespace webapi_bilheteria_c.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 

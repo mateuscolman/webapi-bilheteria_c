@@ -9,11 +9,13 @@ namespace webapi_bilheteria_c.Infra.Repository
     {
         private readonly IDbConnection _dbConnection;
 
-        public UsersRepository(IDbConnection dbConnection){
+        public UsersRepository(IDbConnection dbConnection)
+        {
             _dbConnection = dbConnection;
         }
 
-        public async Task<Users> AuthUser(string email, string password){
+        public async Task<Users> AuthUser(string email, string password)
+        {
             var command = $@"
                 select 
 	                uid,
@@ -24,44 +26,48 @@ namespace webapi_bilheteria_c.Infra.Repository
                     last_acess as LastAcess,
                     birthday,
                     name
-                from users u
+                from user u
                 where u.email = @email and u.password = @password";
-            
-            return await _dbConnection.QueryFirstOrDefaultAsync<Users>(command, new {email, password});
+
+            return await _dbConnection.QueryFirstOrDefaultAsync<Users>(command, new { email, password });
         }
 
-        public async Task<string> GetUserByEmail(string email){
+        public async Task<string> GetUserByEmail(string email)
+        {
             var command = $@"
                 select 
 	                uid
-                from users u
+                from user u
                 where u.email = @email";
-            
-            return await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new {email});
+
+            return await _dbConnection.QueryFirstOrDefaultAsync<string>(command, new { email });
         }
 
-        public async Task InsertUser(Users user){
+        public async Task InsertUser(Users user)
+        {
             var command = $@"
-                insert into users
+                insert into user
                 values(uuid(), @email, @password, 0, sysdate(), sysdate(), @birthday, @name)
             ";
-            
-            await _dbConnection.ExecuteAsync(command, new {
+
+            await _dbConnection.ExecuteAsync(command, new
+            {
                 email = user.Email,
                 password = user.Password,
                 birthday = user.Birthday,
                 name = user.Name
-                });
+            });
         }
 
-        public async Task SetPrivileges(int privileges, string email){
+        public async Task SetPrivileges(int privileges, string email)
+        {
             var command = $@"
-                update users
+                update user
                 set privileges = @privileges
                 where email = @email
             ";
 
-            await _dbConnection.ExecuteAsync(command, new {privileges, email});
+            await _dbConnection.ExecuteAsync(command, new { privileges, email });
         }
     }
 }
