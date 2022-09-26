@@ -4,12 +4,12 @@ namespace webapi_bilheteria_c.Domain.Interface
 {
     public interface IEventsRepository
     {
-        Task<string> InsertEvent(Events events);
+        Task<string> InsertEvent(Event events);
         Task InsertEventTime(DateTime date, string? eventUid);
-        Task<List<Events>> GetEventsOnDisplayByCompany(string? companyUid);
-        Task<List<Events>> GetEventsOnDisplay();
-        Task<List<EventsTime>> GetEventsTime(string? eventUid);
-        Task<Events> GetEventByUid(string? uid);
+        Task<List<Event>> GetEventsOnDisplayByCompany(string? companyUid);
+        Task<List<EventOnDisplay>> GetEventsOnDisplay();
+        Task<List<ScheduleTime>> GetEventsTime(string? eventUid);
+        Task<Event> GetEventByUid(string? uid);
         Task InsertValueEvent(string eventUid, int fullValue);
         Task<int> GetValueEvents(string valueType, string? eventUid);
     }

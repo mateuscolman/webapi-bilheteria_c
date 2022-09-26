@@ -14,7 +14,7 @@ namespace webapi_bilheteria_c.Infra.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<List<Events>> GetEventsOnDisplayByCompany(string? companyUid)
+        public async Task<List<Event>> GetEventsOnDisplayByCompany(string? companyUid)
         {
             var command = $@"
                 select
@@ -33,11 +33,11 @@ namespace webapi_bilheteria_c.Infra.Repository
                     and on_display = 1
             ";
 
-            var events = await _dbConnection.QueryAsync<Events>(command, new { companyUid });
+            var events = await _dbConnection.QueryAsync<Event>(command, new { companyUid });
             return events.ToList();
         }
 
-        public async Task<Events> GetEventByUid(string? uid)
+        public async Task<Event> GetEventByUid(string? uid)
         {
             var command = $@"
                 select
@@ -55,50 +55,49 @@ namespace webapi_bilheteria_c.Infra.Repository
                 where uid = @uid
             ";
 
-            return await _dbConnection.QueryFirstOrDefaultAsync<Events>(command, new { uid });
+            return await _dbConnection.QueryFirstOrDefaultAsync<Event>(command, new { uid });
         }
 
-        public async Task<List<Events>> GetEventsOnDisplay()
+        public async Task<List<EventOnDisplay>> GetEventsOnDisplay()
         {
             var command = $@"
                 select
-                    uid,
-                    name,
-                    starts_in as StartsIn,
-                    ends_in as EndsIn,
-                    on_display as OnDisplay,
-                    description,
-                    cancelled,
-                    reason,
-                    company_uid as CompanyUid,
-                    published_by as PublishedBy
-                from events
-                where on_display = 1
+                    e.uid,
+                    e.name,    
+                    e.presentation_image Image,
+                    c.name companyName,
+                    e.x_dimension dimensionX,
+                    e.y_dimension dimensionY
+                from event e
+                inner join company c on c.uid  = e.company_uid 
+                where on_display = 1    
             ";
 
-            var events = await _dbConnection.QueryAsync<Events>(command);
+            var events = await _dbConnection.QueryAsync<EventOnDisplay>(command);
             return events.ToList();
         }
 
-        public async Task<string> InsertEvent(Events events)
+        public async Task<string> InsertEvent(Event events)
         {
             if (!ValidInsert(events.Name, events.CompanyUid).Result) throw new Exception("Events already exist");
             var command = $@"
-                insert into events
-                values(uuid(), @name, @startsIn, @endsIn, 1, @description, 0, @reason, @companyUid, @publishedBy)
-            ";
+                insert into event
+                values(@uid, @name, @startsIn, @endsIn, 1, @description, 0, @reason, @companyUid, @publishedBy, @presentationImage, 2, 2)";
+
             await _dbConnection.ExecuteAsync(command, new
             {
+                uid = events.Uid,
                 name = events.Name,
                 startsIn = events.StartsIn,
                 endsIn = events.EndsIn,
                 description = events.Description,
                 reason = events.Reason,
                 companyUid = events.CompanyUid,
-                publishedBy = events.PublishedBy
+                publishedBy = events.PublishedBy,
+                presentationImage = events.PresentationImage
             });
 
-            return LastInsert(events.Name, events.CompanyUid).Result;
+            return events.Uid;
         }
 
         public async Task InsertEventTime(DateTime date, string? eventUid)
@@ -110,7 +109,7 @@ namespace webapi_bilheteria_c.Infra.Repository
             await _dbConnection.ExecuteAsync(command, new { date, eventUid });
         }
 
-        public async Task<List<EventsTime>> GetEventsTime(string? eventUid)
+        public async Task<List<ScheduleTime>> GetEventsTime(string? eventUid)
         {
             var command = $@"
                 select
@@ -119,7 +118,7 @@ namespace webapi_bilheteria_c.Infra.Repository
                 from events_time 
                 where event_uid = @eventUid";
 
-            var eventsTime = await _dbConnection.QueryAsync<EventsTime>(command, new { eventUid });
+            var eventsTime = await _dbConnection.QueryAsync<ScheduleTime>(command, new { eventUid });
             return eventsTime.ToList();
         }
 
@@ -150,7 +149,7 @@ namespace webapi_bilheteria_c.Infra.Repository
             var command = $@"
                 select
                     uid
-                from events
+                from event
                 where 
                     company_uid = @companyUid              
                     and name = @name

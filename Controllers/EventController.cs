@@ -15,7 +15,8 @@ namespace webapi_bilheteria_c.Controllers
         private readonly ILogger<ILoggerService> _logger;
 
         public EventController(IEventsService eventsService, IPixClient pixClient,
-            IMessageProducer messageProducer, ITokenService tokenService, ILogger<ILoggerService> logger) : base(tokenService)
+            IMessageProducer messageProducer, ITokenService tokenService, ILogger<ILoggerService> logger,
+            IWebHostEnvironment webHostEnvironment) : base(tokenService)
         {
             _logger = logger;
             _eventsService = eventsService;
@@ -65,26 +66,25 @@ namespace webapi_bilheteria_c.Controllers
         }
 
         [HttpPost("create-event")]
-        public ActionResult CreateEvent(string? name, DateTime startsIn, DateTime endsIn,
-            string? description, string? companyUid, int fullValue)
+        public ActionResult CreateEvent(CreateEvent createEvent, IFormFile img)
         {
             try
             {
-                _eventsService.CreateEvent(new Events
+                _eventsService.CreateEvent(new Event
                 {
-                    Name = name,
-                    StartsIn = startsIn,
-                    EndsIn = endsIn,
-                    Description = description,
-                    CompanyUid = companyUid,
+                    Name = createEvent.Name,
+                    StartsIn = createEvent.StartsIn,
+                    EndsIn = createEvent.EndsIn,
+                    Description = createEvent.Description,
+                    CompanyUid = createEvent.CompanyUid,
                     Reason = string.Empty,
                     PublishedBy = TokenId
-                }, fullValue);
+                }, createEvent.FullValue, img);
                 return Created("", new { Created = true });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
     }
